@@ -1,0 +1,95 @@
+name: Python Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+        poetry-version: ["1.3.1"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup gcloud Auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: "${{ secrets.GC_SERVICE_KEY }}"
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@main
+        with:
+          version: "412.0.0"
+          project_id: ${{ secrets.GC_PROJECT_ID }}
+
+      - name: Set up Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Run tests
+        run: |
+          # Generate coverage report via tests. Does not matter if the tests
+          # pass here; that's covered by dedicated actions.
+          poetry run coverage run --source blind_charging -m pytest || true
+
+      - name: Generate coverage XML
+        run: poetry run coverage xml
+
+      - name: Interpret coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '60 80'
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
+
+      - name: Upload coverage artifacts
+        if: github.event_name == 'push'
+        run: |
+          # Get the badge URL from the first line of the coverage comment.
+          BADGE_URL=$(cat code-coverage-results.md | head -1 | sed -r 's/.*\((.+)\).*/\1/')
+          # Download the badge
+          curl $BADGE_URL > badge.svg
+
+          # Generate web assets for coverage report.
+          poetry run coverage html
+
+          # Upload artifacts
+          gsutil cp badge.svg gs://scpl-blind-charging/coverage/badge.svg
+          # Remove any old static assets for coverage
+          gsutil -m rm -r gs://scpl-blind-charging/coverage/www
+          # Upload coverage static assets
+          gsutil -m cp -z html,js,json,css,png -r htmlcov/* gs://scpl-blind-charging/coverage/www/
+          # Make sure no assets get cached
+          gsutil -m setmeta -r -h "Cache-Control: private, max-age=0, no-transform, no-store, no-cache" gs://scpl-blind-charging/coverage/
+          # Publish all the artifacts
+          gsutil -m acl ch -r -u AllUsers:R gs://scpl-blind-charging/coverage/
