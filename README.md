@@ -1,3 +1,9 @@
+> [!WARNING]
+> This is the prototype of our redaction algorithm that is no longer used or maintained.
+>
+> For more information about the current status of the project, see [blindcharging.org](https://blindcharging.org/).
+
+
 # Blind Charging
 
 [![Python Tests](https://github.com/stanford-policylab/blind-charging/actions/workflows/pytest.yaml/badge.svg?branch=main)](https://github.com/stanford-policylab/blind-charging/actions/workflows/pytest.yaml)
