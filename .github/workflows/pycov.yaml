@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11"]
-        poetry-version: ["1.3.1"]
 
     steps:
       - uses: actions/checkout@v3
@@ -29,28 +28,26 @@ jobs:
           version: "412.0.0"
           project_id: ${{ secrets.GC_PROJECT_ID }}
 
-      - name: Set up Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: ${{ matrix.poetry-version }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up Python3.x
+        uses: actions/setup-python@v5
+        id: py
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
 
       - name: Install dependencies
-        run: poetry install --with dev
+        run: uv sync --locked --all-extras --dev
 
       - name: Run tests
         run: |
           # Generate coverage report via tests. Does not matter if the tests
           # pass here; that's covered by dedicated actions.
-          poetry run coverage run --source blind_charging -m pytest || true
+          uv run coverage run --source blind_charging -m pytest || true
 
       - name: Generate coverage XML
-        run: poetry run coverage xml
+        run: uv run coverage xml
 
       - name: Interpret coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
@@ -81,7 +78,7 @@ jobs:
           curl $BADGE_URL > badge.svg
 
           # Generate web assets for coverage report.
-          poetry run coverage html
+          uv run coverage html
 
           # Upload artifacts
           gsutil cp badge.svg gs://scpl-blind-charging/coverage/badge.svg

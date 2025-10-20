@@ -62,7 +62,7 @@ The annotations give character offsets within the text where the annotation shou
 
 We use:
  - Python3 -- we target compatibility for all versions of Python starting with 3.8. (If we want to support Py3.7 we will need to downgrade Pandas, and probably other things.)
- - [poetry](https://python-poetry.org/) for managing packages and building the library
+ - [uv](https://github.com/astral-sh/uv) for managing packages and building the library
  - [pytest](https://docs.pytest.org/en/7.2.x/) for testing
  - [pre-commit](https://pre-commit.com/) for running formatters and linters
  - [black](https://github.com/psf/black) for code formatting
@@ -71,15 +71,15 @@ We use:
 
 ### Getting started
  - Ensure you have Python3 on your computer.
- - Install [`poetry`](https://python-poetry.org/docs/#installation) if needed
- - `poetry install --with dev` to install dependencies
- - `poetry run pre-commit install` to install git pre-commit hooks
+ - Install [`uv`](https://github.com/astral-sh/uv) if needed
+ - `uv install --with dev` to install dependencies
+ - `uv run pre-commit install` to install git pre-commit hooks
 
 ### Running tests
 
 Run all tests with pytest:
 ```zsh
-poetry run pytest
+uv run pytest
 ```
 
 ### Building the library
