@@ -23,7 +23,6 @@ USPS_STREET_ABBR = {
     "junction",
     "lane",
     "lake",
-    "loop",
     "mount",
     "mountain",
     "parkway",
@@ -71,5 +70,4 @@ USPS_STREET_ABBR = {
     "ter",
     "trl",
     "tpke",
-    "way",
 }

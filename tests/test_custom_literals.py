@@ -15,5 +15,6 @@ def test_custom_literals():
                 "Oracle Arena",
                 "Oakland Coliseum",
                 "Chase Center",
-                ],
-        }) == [Redaction(25, 37, "[stadium]", "stadium")]
+            ],
+        },
+    ) == [Redaction(25, 37, "[stadium]", "stadium")]

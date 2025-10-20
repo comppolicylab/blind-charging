@@ -33,6 +33,6 @@ class Redaction(object):
     def __eq__(self, __value: object) -> bool:
         """Compare this redaction to another object."""
         return repr(self) == repr(__value)
-    
+
     def __repr__(self) -> str:
         return f"Redaction({self.start}, {self.end}, {self.text}, {self.info}, {self.color})"

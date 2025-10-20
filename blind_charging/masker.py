@@ -29,7 +29,6 @@ from .re_util import re_literal_group
 from .source_text import SourceText
 from .text_processing import get_officers_from_narrative, get_persons_from_narrative
 
-
 AnyPerson = Union[OfficerName, PersonName]
 
 
@@ -301,7 +300,7 @@ def mask_other_literals(
 
         "The suspect was last seen the Park District" ->
         "The suspect was last seen in the [district]"
-    
+
     :param doc: Source text
     :param literals: Dictionary describing literal words to redact. Keys will
         be used to substitute for each of the values in the associated list.

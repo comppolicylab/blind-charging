@@ -76,7 +76,7 @@ def annotate(
         norm_officers,
         redact_officers_from_text=redact_officers_from_text,
         literals=literals,
-        )
+    )
 
 
 def apply_annotations(
